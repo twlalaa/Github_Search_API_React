@@ -6,7 +6,7 @@ import Message from "./Components/Message";
 import Result from "./Components/Result";
 
 //Hooks
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 //Spinners
 import { Vortex } from "react-loader-spinner";
@@ -28,18 +28,31 @@ function App() {
       const data = await response.json();
 
       setUser(data);
+      localStorage.setItem("user", JSON.stringify(data));
     } catch (error) {
       setError(true);
     }
     setLoading(false);
   };
 
-  console.log(user);
+  useEffect(() => {
+    getLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    getLocalStorage();
+  }, [error]);
+
+  const getLocalStorage = () => {
+    const storedData = JSON.parse(localStorage.getItem("user"));
+    setUser(storedData);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center flex-col bg-[#141d2f]">
       <Header />
       <Search sendValue={fetchData} />
-      {error && <Message>Could not find any user</Message>}
+      {error && <Message>Could not find the user, did you mean this?</Message>}
       {loading && (
         <Vortex
           visible={true}
